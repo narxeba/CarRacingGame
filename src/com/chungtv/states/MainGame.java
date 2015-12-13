@@ -10,12 +10,13 @@ public class MainGame extends StateBasedGame {
 
     public MainGame(String name) {
         super(name);
-        addState(new PlayState(0));
+
     }
 
     @Override
     public void initStatesList(GameContainer gameContainer) throws SlickException {
-        getState(0).init(gameContainer, this);
+        addState(new WaitingState(1));
+        addState(new PlayState(2));
     }
 
     public static void main(String[] args){

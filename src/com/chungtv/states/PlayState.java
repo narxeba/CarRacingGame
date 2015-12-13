@@ -1,7 +1,8 @@
 package com.chungtv.states;
 
 import com.chungtv.Constants;
-import com.chungtv.objects.*;
+import com.chungtv.objects.Car;
+import com.chungtv.objects.Track;
 import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
@@ -49,13 +50,21 @@ public class PlayState extends BasicGameState {
     private Animation explosion;
 
     private DatagramSocket sendSocket, receiveSocket;
-    private int sendPort = Constants.HOST_PORT;
-    private int receivePort = Constants.CLIENT_PORT;
+    public static int sendPort;
+    public static int receivePort;
     private String pos = "Initial";
 
     public PlayState(int id) {
         this.id = id;
+    }
 
+    @Override
+    public int getID() {
+        return 2;
+    }
+
+    @Override
+    public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
         try {
             sendSocket = new DatagramSocket();
             receiveSocket = new DatagramSocket(receivePort);
@@ -91,15 +100,7 @@ public class PlayState extends BasicGameState {
                 }
             }
         }).start();
-    }
 
-    @Override
-    public int getID() {
-        return 0;
-    }
-
-    @Override
-    public void init(GameContainer gameContainer, StateBasedGame stateBasedGame) throws SlickException {
         skins = new ArrayList<Image>();
         otherCars = new ArrayList<Car>();
         onFinishTime = new double[]{0.0, 0.0};
@@ -252,11 +253,15 @@ public class PlayState extends BasicGameState {
         if(carShape.intersects(bound))
             reset();
 
+        if(carShape.intersects(otherCarShapes.get(0))){
+            isCollide = true;
+        }
+
         //collision between cars is judged by the server, client will get the result and restart if collision occurs
         if(isCollide)
         {
             explosion.start();
-            reset();
+//            reset();
         }
 
         String s = myCar.getPosition()[0] + "," + myCar.getPosition()[1] + "," + myCar.getDirection();
@@ -295,6 +300,14 @@ public class PlayState extends BasicGameState {
             skins.get(i).draw(375+shiftPosition[0] - otherCars.get(i).getPosition()[0],275+shiftPosition[1]+otherCars.get(i).getPosition()[1]);
         }
         mySkin.drawCentered(400, 300);
+
+        if(isCollide)
+        {
+            graphics.setColor(Color.orange);
+            graphics.drawString("Collision!!!!",300,300);
+            graphics.setColor(Color.white);
+            explosion.draw(370, 270);
+        }
 
         // display information
         graphics.setColor(Color.white);
