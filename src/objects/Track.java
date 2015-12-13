@@ -60,7 +60,7 @@ public class Track {
 		return shape;
 	}
 	
-	public Shape getInnerBoundry(float direction, float x, float y)
+	public Shape getInnerBoundary(float direction, float x, float y)
 	{
 		Shape shape = inShape;
 		shape.setLocation(x+145,y+138);
