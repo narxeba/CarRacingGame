@@ -75,11 +75,14 @@ public class PlayState extends BasicGameState {
                         pos = new String(packet.getData());
 
                         if (pos.contains(",")) {
-                            float rivalX = Float.parseFloat(pos.substring(0, pos.indexOf(",")).trim());
-                            float rivalY = Float.parseFloat(pos.substring(pos.indexOf(",") + 1).trim());
+                            String[] sub = pos.split(",");
+                            float rivalX = Float.parseFloat(sub[0].trim());
+                            float rivalY = Float.parseFloat(sub[1].trim());
+                            float rivalD = Float.parseFloat(sub[2].trim());
 
                             if (rivalCar != null) {
                                 rivalCar.setPosition(rivalX, rivalY);
+                                rivalCar.setDirection(rivalD);
                             }
                         }
                     }
@@ -256,7 +259,7 @@ public class PlayState extends BasicGameState {
             reset();
         }
 
-        String s = myCar.getPosition()[0] + "," + myCar.getPosition()[1];
+        String s = myCar.getPosition()[0] + "," + myCar.getPosition()[1] + "," + myCar.getDirection();
         byte[] buff = s.getBytes();
         try {
             DatagramPacket packet = new DatagramPacket(buff, buff.length, InetAddress.getByName("localhost"), sendPort);
