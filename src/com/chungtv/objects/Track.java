@@ -1,4 +1,4 @@
-package objects;
+package com.chungtv.objects;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;

@@ -1,7 +1,7 @@
-package states;
+package com.chungtv.states;
 
-import objects.Car;
-import objects.Track;
+import com.chungtv.Constants;
+import com.chungtv.objects.*;
 import org.newdawn.slick.*;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
@@ -49,8 +49,8 @@ public class PlayState extends BasicGameState {
     private Animation explosion;
 
     private DatagramSocket sendSocket, receiveSocket;
-    private int sendPort = 10000;
-    private int receivePort = 10001;
+    private int sendPort = Constants.HOST_PORT;
+    private int receivePort = Constants.CLIENT_PORT;
     private String pos = "Initial";
 
     public PlayState(int id) {
@@ -112,7 +112,7 @@ public class PlayState extends BasicGameState {
 
         String bluePath = "./data/car/cb1.png";
         String redPath = "./data/car/cr1.png";
-        if (sendPort == 10000) {
+        if (sendPort == Constants.HOST_PORT) {
             rivalCar = new Car(bluePath);
             myCar = new Car(redPath);
         } else {
