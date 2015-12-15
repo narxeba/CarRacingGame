@@ -45,6 +45,8 @@ public class PlayState extends BasicGameState {
     private boolean isRun;
     private boolean isBrake;
     private boolean isCollide;
+    private boolean isLost;
+    private boolean isWin;
 
     private SpriteSheet explosionpic;
     private Animation explosion;
@@ -53,6 +55,7 @@ public class PlayState extends BasicGameState {
     public static int sendPort;
     public static int receivePort;
     private String pos = "Initial";
+    private boolean isConnected = false;
 
     public PlayState(int id) {
         this.id = id;
@@ -94,6 +97,9 @@ public class PlayState extends BasicGameState {
                                 rivalCar.setDirection(rivalD);
                             }
                         }
+                        if (pos.contains("finished")){
+                            if (!isWin) isLost = true;
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -108,6 +114,8 @@ public class PlayState extends BasicGameState {
         isCrossLine = 0;
         currentLap = 0;
         isCollide = false;
+        isLost = false;
+        isWin = false;
         explosionpic = new SpriteSheet("data/emap.png", 60, 60);
         explosion = new Animation(explosionpic, 100);
 
@@ -116,11 +124,14 @@ public class PlayState extends BasicGameState {
         if (sendPort == Constants.HOST_PORT) {
             rivalCar = new Car(bluePath);
             myCar = new Car(redPath);
+            myCar.setPosition(338f, 200f);
         } else {
             rivalCar = new Car(redPath);
             myCar = new Car(bluePath);
+            myCar.setPosition(270f, 200f);
         }
         otherCars.add(rivalCar);
+
         skins.add(rivalCar.getSkin2());
         startPosition = new float[]{myCar.getPosition()[0], myCar.getPosition()[1], myCar.getDirection()};
 
@@ -131,7 +142,6 @@ public class PlayState extends BasicGameState {
         mySkin = myCar.getSkin();
         track = new Track("./data/track/track.png");
         map = track.getMap();
-
         carShape = new Rectangle(50, 50, 20, 40);
         carShape.setLocation(390, 280);
 
@@ -161,8 +171,23 @@ public class PlayState extends BasicGameState {
     public void update(GameContainer gameContainer, StateBasedGame stateBasedGame, int delta) throws SlickException {
         Input input = gameContainer.getInput();
 
+        if (isLost || isWin){
+            if (input.isKeyPressed(Input.KEY_B)){
+                stateBasedGame.getState(1).init(gameContainer, stateBasedGame);
+                stateBasedGame.enterState(1);
+            } else if (input.isKeyPressed(Input.KEY_Q)){
+                System.exit(0);
+            }
+            return;
+        }
+
+        //check connect
+        if (rivalCar.getPosition()[0] != 0){
+            isConnected = true;
+        }
+
         //car control
-        myCar.setAcceleration(0.03f);
+        myCar.setAcceleration(0.01f);
         isTurnLeft = input.isKeyDown(Input.KEY_LEFT);
         isTurnRight = input.isKeyDown(Input.KEY_RIGHT);
         isRun = input.isKeyDown(Input.KEY_UP);
@@ -245,9 +270,13 @@ public class PlayState extends BasicGameState {
 
 
         //detect collision between player's car and the track boundary
-        if(carShape.intersects(innerBoundary)||innerBoundary.contains(carShape)||carShape.intersects(exteriorBoundary)||exteriorBoundary.contains(carShape))
-            if(myCar.getSpeed()>1.2)
-                myCar.setSpeed((float) 1.2);
+        if(carShape.intersects(exteriorBoundary)||exteriorBoundary.contains(carShape))
+            if(myCar.getSpeed()>0.5)
+                myCar.setSpeed((float) 0.5);
+
+        if(carShape.intersects(innerBoundary)||innerBoundary.contains(carShape)){
+            reset();
+        }
 
         //if player drive out of the track too far, than reset it's position
         if(carShape.intersects(bound))
@@ -260,11 +289,15 @@ public class PlayState extends BasicGameState {
         //collision between cars is judged by the server, client will get the result and restart if collision occurs
         if(isCollide)
         {
-            explosion.start();
+//            explosion.start();
 //            reset();
         }
 
         String s = myCar.getPosition()[0] + "," + myCar.getPosition()[1] + "," + myCar.getDirection();
+        if (currentLap == 1){
+            s = "finished";
+            isWin = true;
+        }
         byte[] buff = s.getBytes();
         try {
             DatagramPacket packet = new DatagramPacket(buff, buff.length, InetAddress.getByName("localhost"), sendPort);
@@ -287,6 +320,24 @@ public class PlayState extends BasicGameState {
     @Override
     public void render(GameContainer gameContainer, StateBasedGame stateBasedGame, Graphics graphics) throws SlickException {
         graphics.setBackground(Color.gray);
+
+        if (isConnected){
+            graphics.drawString("Connected!", 15, 115);
+        } else {
+            graphics.drawString("Not connect", 15, 115);
+        }
+
+        if (isLost){
+            graphics.drawString("YOU ARE DEFEATED", 600, 100);
+            graphics.drawString("B: Back", 600, 125);
+            graphics.drawString("Q: Quit", 600, 150);
+        }
+
+        if (isWin){
+            graphics.drawString("YOU ARE VICTORY", 600, 100);
+            graphics.drawString("B: Back", 600, 125);
+            graphics.drawString("Q: Quit", 600, 150);
+        }
 
         float position[] = myCar.getPosition();
         float direction = -myCar.getDirection();
@@ -312,8 +363,14 @@ public class PlayState extends BasicGameState {
         // display information
         graphics.setColor(Color.white);
         graphics.draw(bound);
+//        graphics.setColor(Color.orange);
+//        graphics.draw(finishLine2);
+        graphics.draw(innerBoundary);
+//        graphics.setColor(Color.blue);
+//        graphics.draw(finishLine1);
         graphics.drawString("Speed: "+ (int) (myCar.getSpeed() * 140 / 4) +"KM/H", 15, 45);
-        graphics.drawString("Other players: " + rivalCar.getPosition()[0] + "," + rivalCar.getPosition()[1],15,75);
+        graphics.drawString("Your rival: " + rivalCar.getPosition()[0] + "," + rivalCar.getPosition()[1],15,75);
+        graphics.drawString("Lap: "+currentLap, 15, 100);
 
     }
 }

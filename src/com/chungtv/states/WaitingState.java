@@ -57,19 +57,15 @@ public class WaitingState extends BasicGameState {
         if (state == 2){
             PlayState.sendPort = Constants.HOST_PORT;
             PlayState.receivePort = Constants.CLIENT_PORT;
-            if (input.isKeyPressed(Input.KEY_ENTER)){
-                stateBasedGame.getState(2).init(gameContainer, stateBasedGame);
-                stateBasedGame.enterState(2);
-            }
+            stateBasedGame.getState(2).init(gameContainer, stateBasedGame);
+            stateBasedGame.enterState(2);
         }
 
         if (state == 3){
             PlayState.sendPort = Constants.CLIENT_PORT;
             PlayState.receivePort = Constants.HOST_PORT;
-            if (input.isKeyPressed(Input.KEY_ENTER)){
-                stateBasedGame.getState(2).init(gameContainer, stateBasedGame);
-                stateBasedGame.enterState(2);
-            }
+            stateBasedGame.getState(2).init(gameContainer, stateBasedGame);
+            stateBasedGame.enterState(2);
         }
     }
 }

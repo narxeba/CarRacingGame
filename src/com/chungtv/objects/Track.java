@@ -7,13 +7,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 
-/**
- * This is a Class for the race track.
- * Including map pictures and some geometric shapes used for collision detection
- * Coordinate transform is implemented in the methods
- * 
- * @author Xiao Ma
- */
 public class Track {
 	private Image map;
 	private Shape finishLine1;

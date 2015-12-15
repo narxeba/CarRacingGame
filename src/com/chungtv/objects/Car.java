@@ -6,12 +6,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 
-/**
- * This is a Class or player's car
- * Including its geometric shape and skin picture
- * 
- * @author Yikai Gong
- */
 public class Car {
 	private Image skin;
 	private float speed, acceleration,direction;
