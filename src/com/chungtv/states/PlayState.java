@@ -352,13 +352,13 @@ public class PlayState extends BasicGameState {
         }
         mySkin.drawCentered(400, 300);
 
-        if(isCollide)
-        {
-            graphics.setColor(Color.orange);
-            graphics.drawString("Collision!!!!",300,300);
-            graphics.setColor(Color.white);
-            explosion.draw(370, 270);
-        }
+//        if(isCollide)
+//        {
+//            graphics.setColor(Color.orange);
+//            graphics.drawString("Collision!!!!",300,300);
+//            graphics.setColor(Color.white);
+//            explosion.draw(370, 270);
+//        }
 
         // display information
         graphics.setColor(Color.white);

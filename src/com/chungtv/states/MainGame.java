@@ -22,9 +22,10 @@ public class MainGame extends StateBasedGame {
     public static void main(String[] args){
         try {
             AppGameContainer container = new AppGameContainer(new MainGame("Racing Game"), 800, 600, false);
-            container.setShowFPS(true);
+            container.setShowFPS(false);
             container.setTargetFrameRate(60);
             container.setAlwaysRender(true);
+            container.setFullscreen(true);
             container.start();
         } catch (SlickException e) {
             e.printStackTrace();
